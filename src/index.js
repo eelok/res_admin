@@ -1,4 +1,6 @@
-const { createServer } = require('@graphql-yoga/node')
+const { createServer } = require('@graphql-yoga/node');
+const { v4: uuidv4 } = require('uuid');
+
 const {User} = require('../models');
 const typeDefs = `
     type Query {
@@ -33,9 +35,10 @@ const resolvers = {
     Mutation: {
         async createUser(parent, args, ctx, info){
             const {firstName, lastName} = args;
+            const id = uuidv4();
+            console.log(id);
             try{
-                const newUser = await User.create({firstName: firstName, lastName: lastName})
-                console.log(args);
+                const newUser = await User.create({id: id, firstName: firstName, lastName: lastName})
                 return;
             } catch(err){
                 console.log(err)
