@@ -9,13 +9,14 @@ const typeDefs = `
     }
 
     type Mutation {
-        createUser(firstName: String!, lastName: String!): User!
+        createUser(firstName: String!, lastName: String!, email: String!): User!
     }
 
     type User {
         id: ID!
         firstName: String!
         lastName: String!
+        email: String!
     }
 `
 const resolvers = {
@@ -26,22 +27,25 @@ const resolvers = {
                 firstName: "Mariia",
                 lastName: "Petretckaia"
             }
-        },
-        greeting(parent, args, ctx, info){
-            console.log(args);
-            return `Hello ${args.name}`;
         }
     },
     Mutation: {
         async createUser(parent, args, ctx, info){
-            const {firstName, lastName} = args;
+            const {firstName, lastName, email} = args;
             const id = uuidv4();
             console.log(id);
             try{
-                const newUser = await User.create({id: id, firstName: firstName, lastName: lastName})
-                return;
+                const foundUser = await User.findOne({
+                    where: {email}
+                });
+                if(!foundUser){
+                    const newUser = await User.create({id: id, firstName: firstName, lastName: lastName, email});
+                    return newUser;
+                } 
+                return `users with email ${email} is alrady exist`; 
+                
             } catch(err){
-                console.log(err)
+                console.log(err);
             }
         }
     }
