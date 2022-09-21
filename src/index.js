@@ -1,5 +1,6 @@
 const { createServer } = require('@graphql-yoga/node');
 const { v4: uuidv4 } = require('uuid');
+const constants = require('./constants');
 
 const {User} = require('../models');
 const typeDefs = `
@@ -9,7 +10,7 @@ const typeDefs = `
     }
 
     type Mutation {
-        createUser(firstName: String!, lastName: String!, email: String!): User!
+        createUser(firstName: String!, lastName: String!, email: String!): UserMutationSersponse!
     }
 
     type User {
@@ -17,6 +18,12 @@ const typeDefs = `
         firstName: String!
         lastName: String!
         email: String!
+    }
+
+    type UserMutationSersponse {
+        code: String!
+        sucess: Boolean!
+        message: String
     }
 `
 const resolvers = {
@@ -40,9 +47,17 @@ const resolvers = {
                 });
                 if(!foundUser){
                     const newUser = await User.create({id: id, firstName: firstName, lastName: lastName, email});
-                    return newUser;
+                    return {
+                        code: constants.STATUS_CODE_201,
+                        sucess: true,
+                        message: 'User with ${id} was created',
+                    };
                 } 
-                return `users with email ${email} is alrady exist`; 
+                return {
+                        code: constants.STATUS_CODE_400,
+                        sucess: false,
+                        message: 'User with ${id} is already exists',
+                }
                 
             } catch(err){
                 console.log(err);
