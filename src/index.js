@@ -2,7 +2,7 @@ const { createServer } = require('@graphql-yoga/node');
 const { v4: uuidv4 } = require('uuid');
 const constants = require('./constants');
 
-const {User} = require('../models');
+const {User, Education} = require('../models');
 const typeDefs = `
     type Query {
         greeting(name: String): String!
@@ -11,6 +11,7 @@ const typeDefs = `
 
     type Mutation {
         createUser(firstName: String!, lastName: String!, email: String!): UserMutationSersponse!
+        createEducation(start: String!, end: String!, shortName: String, longName: String, division: String): Education!
     }
 
     type User {
@@ -24,6 +25,15 @@ const typeDefs = `
         code: String!
         sucess: Boolean!
         message: String
+    }
+
+    type Education {
+        id: ID!
+        start: String!
+        end: String!
+        shortName: String
+        longName: String
+        division: String
     }
 `
 const resolvers = {
@@ -62,6 +72,12 @@ const resolvers = {
             } catch(err){
                 console.log(err);
             }
+        },
+        async createEducation(parent, args, ctx, info){
+            const {start, end, shortName, longName, division} = args;
+            const id = uuidv4();
+            const newEducaton = await Education.create({id: id, start: start, end: end, shortName: shortName, longName: longName, division: division});
+            return newEducaton;
         }
     }
 }
