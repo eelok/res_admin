@@ -1,7 +1,7 @@
 const { createServer } = require('@graphql-yoga/node');
 const { v4: uuidv4 } = require('uuid');
 const constants = require('./constants');
-const {User, Education} = require('../models');
+const {User, Education, HardSkill} = require('../models');
 const fs = require('fs');
 
 const resolvers = {
@@ -53,6 +53,17 @@ const resolvers = {
                 throw err;
             }
 
+        },
+        async createHardSkill(parent, args, ctx, info){
+            const {title} = args;
+            const id = uuidv4();
+            try {
+                const newHardSkill = await HardSkill.create({id, title});
+                return newHardSkill;
+            } catch(err){
+                console.log(err);
+                throw err;
+            }
         }
     }
 }
