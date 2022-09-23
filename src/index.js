@@ -46,7 +46,7 @@ const resolvers = {
             const {start, end, shortName, longName, division, description} = args;
             const id = uuidv4();
             try {
-                const newEducaton = await Education.create({id: id, start: start, end: end, shortName: shortName, longName: longName, division: division, description});
+                const newEducaton = await Education.create({id, start, end, shortName, longName, division, description});
                 return newEducaton;
             } catch(err){
                 console.log(err);
