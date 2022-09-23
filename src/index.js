@@ -39,13 +39,20 @@ const resolvers = {
                 
             } catch(err){
                 console.log(err);
+                throw err;
             }
         },
         async createEducation(parent, args, ctx, info){
-            const {start, end, shortName, longName, division} = args;
+            const {start, end, shortName, longName, division, description} = args;
             const id = uuidv4();
-            const newEducaton = await Education.create({id: id, start: start, end: end, shortName: shortName, longName: longName, division: division});
-            return newEducaton;
+            try {
+                const newEducaton = await Education.create({id: id, start: start, end: end, shortName: shortName, longName: longName, division: division, description});
+                return newEducaton;
+            } catch(err){
+                console.log(err);
+                throw err;
+            }
+
         }
     }
 }

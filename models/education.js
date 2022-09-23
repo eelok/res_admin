@@ -14,7 +14,30 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Education.init({
-    start: DataTypes.STRING
+    start:{ 
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    end:{ 
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    shortName:{ 
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    longName:{ 
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    division: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   }, {
     sequelize,
     modelName: 'Education',

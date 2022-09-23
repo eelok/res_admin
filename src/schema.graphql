@@ -1,0 +1,38 @@
+type Query {
+    user: User!
+}
+
+type Mutation {
+    createUser(firstName: String!, lastName: String!, email: String!): UserMutationSersponse!
+    createEducation(
+        start: String!, end: String!, 
+        shortName: String, longName: String, 
+        division: String, description: String): Education!
+}
+
+type Education {
+    id: ID!
+    start: String!
+    end: String!
+    shortName: String
+    longName: String
+    division: String
+    description: String
+}
+
+type Mutation {
+    createUser(firstName: String!, lastName: String!, email: String!): UserMutationSersponse!
+}
+
+type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    email: String!
+}
+
+type UserMutationSersponse {
+    code: String!
+    sucess: Boolean!
+    message: String
+}
