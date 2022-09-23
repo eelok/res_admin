@@ -1,31 +1,9 @@
 const { createServer } = require('@graphql-yoga/node');
 const { v4: uuidv4 } = require('uuid');
 const constants = require('./constants');
+const {User, Education} = require('../models');
+const fs = require('fs');
 
-const {User} = require('../models');
-const typeDefs = `
-    type Query {
-        greeting(name: String): String!
-        user: User!
-    }
-
-    type Mutation {
-        createUser(firstName: String!, lastName: String!, email: String!): UserMutationSersponse!
-    }
-
-    type User {
-        id: ID!
-        firstName: String!
-        lastName: String!
-        email: String!
-    }
-
-    type UserMutationSersponse {
-        code: String!
-        sucess: Boolean!
-        message: String
-    }
-`
 const resolvers = {
     Query: {
         user() {
@@ -61,14 +39,28 @@ const resolvers = {
                 
             } catch(err){
                 console.log(err);
+                throw err;
             }
+        },
+        async createEducation(parent, args, ctx, info){
+            const {start, end, shortName, longName, division, description} = args;
+            const id = uuidv4();
+            try {
+                const newEducaton = await Education.create({id, start, end, shortName, longName, division, description});
+                return newEducaton;
+            } catch(err){
+                console.log(err);
+                throw err;
+            }
+
         }
     }
 }
 
+
 const server = createServer({
     schema: {
-      typeDefs,
+      typeDefs: fs.readFileSync('./src/schema.graphql', { encoding: "utf8" }),
       resolvers
     },
   })
