@@ -52,6 +52,25 @@ const Mutation = {
             console.log(err);
             throw err;
         }
+    },
+    async addEducationToUser(parent, args, ctx, info){
+        const {userID, educationID} = args
+        const { db } = ctx;
+        const foundUser = await db.User.findByPk(userID);
+        const foundEducation = await db.Education.findByPk(educationID);
+        if(foundUser && foundEducation){
+            const res = await foundUser.addEducation(foundEducation, {through: Users_Educations});
+            return res;
+        }
+        if(!foundUser && !educationID){
+            return `${userId} and ${educationID} don't exist`
+        }
+        if(!foundUser){
+            return `${userId} does not exist`;
+        } 
+        if(!educationID){
+            return `${educationID} does not exist`;
+        }
     }
 }
 
