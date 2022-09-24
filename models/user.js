@@ -12,7 +12,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       User.belongsToMany(models.Education, {
-        through: "User_Education"
+        foreignKey: 'userId', 
+        through: "Users_Educations",
+        as: 'education'
       });
     }
   }

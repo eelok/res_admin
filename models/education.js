@@ -11,7 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Education.belongsToMany(models.User, {
-        through: "User_Education"
+        foreignKey: 'educationId',
+        through: "Users_Educations",
+        as: 'user'
       });
     }
   }
@@ -41,6 +43,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     }
   }, {
+    tableName: 'Educations',
     sequelize,
     modelName: 'Education',
   });
