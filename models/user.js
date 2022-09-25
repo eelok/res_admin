@@ -1,4 +1,5 @@
 'use strict';
+
 const {
   Model
 } = require('sequelize');
@@ -13,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       User.belongsToMany(models.Education, {
         foreignKey: 'userId', 
-        through: "Users_Educations",
+        through: models.User_Education,
         as: 'education'
       });
     }

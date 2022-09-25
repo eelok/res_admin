@@ -3,7 +3,7 @@ const constants = require('../constants');
 const Mutation = {
     async createUser(parent, args, ctx, info) {
         const { firstName, lastName, email } = args;
-        const {db} = ctx;
+        const { db } = ctx;
         const id = uuidv4();
         try {
             const foundUser = await db.User.findOne({
@@ -28,19 +28,19 @@ const Mutation = {
             throw err;
         }
     },
-    async createEducation(parent, args, ctx, info) {
-        const { start, end, shortName, longName, division, description } = args;
-        const {db} = ctx;
-        const id = uuidv4();
-        try {
-            const newEducaton = await db.Education.create({ id, start, end, shortName, longName, division, description });
-            return newEducaton;
-        } catch (err) {
-            console.log(err);
-            throw err;
-        }
+    // async createEducation(parent, args, ctx, info) {
+    //     const { start, end, shortName, longName, division, description } = args;
+    //     const {db} = ctx;
+    //     const id = uuidv4();
+    //     try {
+    //         const newEducaton = await db.Education.create({ id, start, end, shortName, longName, division, description });
+    //         return newEducaton;
+    //     } catch (err) {
+    //         console.log(err);
+    //         throw err;
+    //     }
 
-    },
+    // },
     async createHardSkill(parent, args, ctx, info) {
         const { title } = args;
         const { db } = ctx;
@@ -53,23 +53,29 @@ const Mutation = {
             throw err;
         }
     },
-    async addEducationToUser(parent, args, ctx, info){
-        const {userID, educationID} = args
+    async addEducationToUser(parent, args, ctx, info) {
+        const { userID, start, end, shortName, longName, division, description } = args
         const { db } = ctx;
+        const id = uuidv4();
         const foundUser = await db.User.findByPk(userID);
-        const foundEducation = await db.Education.findByPk(educationID);
-        if(foundUser && foundEducation){
-            const res = await foundUser.addEducation(foundEducation, {through: Users_Educations});
-            return res;
+        const education = await db.Education.create({ id, start, end, shortName, longName, division, description });
+        if (!foundUser) {
+            return {
+                code: constants.STATUS_CODE_404,
+                sucess: false,
+                message: `${userId} does not exist`
+            };
         }
-        if(!foundUser && !educationID){
-            return `${userId} and ${educationID} don't exist`
-        }
-        if(!foundUser){
-            return `${userId} does not exist`;
-        } 
-        if(!educationID){
-            return `${educationID} does not exist`;
+        try {
+            const res = await foundUser.addEducation(education, { through: db.User_Education });
+            return {
+                code: constants.STATUS_CODE_201,
+                sucess: true,
+                message: `aducation wiht id ${education.id} was added to ${foundUser.id}` 
+            };
+        } catch (err) {
+            console.log(err);
+            throw err;
         }
     }
 }

@@ -21,10 +21,23 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   User_Education.init({
-    uderId: DataTypes.STRING,
-    educationId: DataTypes.STRING
+    userId: {
+      type: DataTypes.STRING,
+      references: {
+        model: 'User',
+        key: 'id'
+      }
+    },
+    educationId: {
+     type: DataTypes.STRING,
+     references: {
+      model: 'Education',
+      key: 'id'
+    }
+    }
   }, {
     sequelize,
+    tableName: "Users_Educations",
     modelName: 'User_Education',
   });
   return User_Education;
