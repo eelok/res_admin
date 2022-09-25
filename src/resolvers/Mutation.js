@@ -58,7 +58,6 @@ const Mutation = {
         const { db } = ctx;
         const id = uuidv4();
         const foundUser = await db.User.findByPk(userID);
-        const education = await db.Education.create({ id, start, end, shortName, longName, division, description });
         if (!foundUser) {
             return {
                 code: constants.STATUS_CODE_404,
@@ -67,11 +66,19 @@ const Mutation = {
             };
         }
         try {
+            const education = await db.Education.create({ id, start, end, shortName, longName, division, description });
+            if(!education){
+                return {
+                    code: constants.STATUS_CODE_404,
+                    sucess: false,
+                    message: `education with id ${education.id} was not created`  
+                }
+            }
             const res = await foundUser.addEducation(education, { through: db.User_Education });
             return {
                 code: constants.STATUS_CODE_201,
                 sucess: true,
-                message: `aducation wiht id ${education.id} was added to ${foundUser.id}` 
+                message: `education wiht id ${education.id} was added to ${foundUser.id}` 
             };
         } catch (err) {
             console.log(err);
