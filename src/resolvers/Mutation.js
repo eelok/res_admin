@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
 const constants = require('../constants');
 const Mutation = {
@@ -66,15 +67,49 @@ const Mutation = {
             };
         }
         try {
-            const education = await db.Education.create({ id, start, end, shortName, longName, division, description });
-            if(!education){
+            const foundEducation = await db.Education.findOne({
+                where: {
+                    // start,
+                    // end,
+                    shortName,
+                    longName,
+                    // division, 
+                    // description
+                }
+            });
+            if(!foundEducation){
+                const education = await db.Education.create({ id, start, end, shortName, longName, division, description });
+                if(!education){
+                    return {
+                        code: constants.STATUS_CODE_404,
+                        sucess: false,
+                        message: `education with id ${education.id} was not created`  
+                    }
+                }
+                const res = await foundUser.addEducation(education, { through: db.User_Education });
+                return {
+                    code: constants.STATUS_CODE_201,
+                    sucess: true,
+                    message: `education wiht id ${education.id} was added to ${foundUser.id}` 
+                };
+
+            }
+            const recordUserEducation = await db.User_Education.findOne({
+                where: {
+                    userId: foundUser.id,
+                    educationId: foundEducation.id
+                }
+            });
+            console.log(recordUserEducation);
+            if(recordUserEducation){
                 return {
                     code: constants.STATUS_CODE_404,
                     sucess: false,
-                    message: `education with id ${education.id} was not created`  
-                }
+                    message: `${foundUser.id} alrady has the edcucaton ${foundEducation.id}`
+                };
             }
             const res = await foundUser.addEducation(education, { through: db.User_Education });
+            console.log(res);
             return {
                 code: constants.STATUS_CODE_201,
                 sucess: true,
