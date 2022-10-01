@@ -17,9 +17,21 @@ module.exports = (sequelize, DataTypes) => {
         through: models.User_Education,
         as: 'education'
       });
+      User.hasMany(models.Hardskill, {
+         foreignKey: {
+           name: 'userId',
+           as: 'hardskill'
+         }
+      });
     }
   }
   User.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
+      primaryKey: true,
+    },
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,  

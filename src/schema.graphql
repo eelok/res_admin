@@ -4,13 +4,13 @@ type Query {
 
 type Mutation {
     createUser(firstName: String!, lastName: String!, email: String!): UserMutationSersponse!
-    createHardSkill(title: String): HardSkill
     addEducationToUser
     (userID: String!,
         start: String!, end: String!,
         shortName: String, longName: String,
         division: String, description: String
     ): AddEducatonToUserResponse!
+    addHardSkillToUser(userId: ID!, title: String!): AddHardSkillResponse!
 }
 
 type Education {
@@ -38,6 +38,12 @@ type UserMutationSersponse {
 }
 
 type AddEducatonToUserResponse {
+    code: String!
+    sucess: Boolean!
+    message: String
+}
+
+type AddHardSkillResponse {
     code: String!
     sucess: Boolean!
     message: String
