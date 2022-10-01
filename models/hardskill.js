@@ -10,10 +10,24 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Hardskill.belongsTo(models.User, {
+          foreignKey: {
+            name: 'userId',
+            as: 'user'
+          }
+      })
     }
   }
   Hardskill.init({
+    id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      primaryKey: true
+    },
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
     title: {
       type: DataTypes.STRING,
       allowNull: false,

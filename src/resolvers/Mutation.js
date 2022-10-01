@@ -29,30 +29,33 @@ const Mutation = {
             throw err;
         }
     },
-    // async createEducation(parent, args, ctx, info) {
-    //     const { start, end, shortName, longName, division, description } = args;
-    //     const {db} = ctx;
-    //     const id = uuidv4();
-    //     try {
-    //         const newEducaton = await db.Education.create({ id, start, end, shortName, longName, division, description });
-    //         return newEducaton;
-    //     } catch (err) {
-    //         console.log(err);
-    //         throw err;
-    //     }
-
-    // },
-    async createHardSkill(parent, args, ctx, info) {
-        const { title } = args;
+    async addHardSkillToUser(parent, args, ctx, info){
+        const { userId, title } = args;
         const { db } = ctx;
         const id = uuidv4();
         try {
-            const newHardSkill = await db.Hardskill.create({ id, title });
-            return newHardSkill;
-        } catch (err) {
-            console.log(err);
+            const foundUser = await db.User.findByPk(userId);
+            if (!foundUser) {
+                return {
+                    code: constants.STATUS_CODE_404,
+                    sucess: false,
+                    message: `user with id: ${userId} does not exist`
+                };
+            }
+            const createdHardSkill = await db.Hardskill.create({
+                id,
+                title, 
+                userId: foundUser.id
+            });
+            return {
+                code: constants.STATUS_CODE_201,
+                sucess: true,
+                message: `a hard skill wiht id ${createdHardSkill.id} was added to user with id ${foundUser.id}`
+            }
+        } catch(err){
             throw err;
         }
+
     },
     async addEducationToUser(parent, args, ctx, info) {
         const { userID, start, end, shortName, longName, division, description } = args
