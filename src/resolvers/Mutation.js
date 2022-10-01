@@ -59,22 +59,22 @@ const Mutation = {
         const { db } = ctx;
         const id = uuidv4();
         const foundUser = await db.User.findByPk(userID);
+        //в мессаджь пишу id а юзера тотакого нет странно
         if (!foundUser) {
             return {
                 code: constants.STATUS_CODE_404,
                 sucess: false,
-                message: `${userId} does not exist`
+                message: `user with id: ${userID} does not exist`
             };
         }
         try {
             const foundEducation = await db.Education.findOne({
                 where: {
-                    // start,
-                    // end,
+                    start,
+                    end,
                     shortName,
                     longName,
-                    // division, 
-                    // description
+                    division, 
                 }
             });
             if(!foundEducation){
@@ -92,7 +92,6 @@ const Mutation = {
                     sucess: true,
                     message: `education wiht id ${education.id} was added to ${foundUser.id}` 
                 };
-
             }
             const recordUserEducation = await db.User_Education.findOne({
                 where: {
