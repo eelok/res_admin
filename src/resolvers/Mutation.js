@@ -59,7 +59,6 @@ const Mutation = {
         const { db } = ctx;
         const id = uuidv4();
         const foundUser = await db.User.findByPk(userID);
-        //в мессаджь пишу id а юзера тотакого нет странно
         if (!foundUser) {
             return {
                 code: constants.STATUS_CODE_404,
