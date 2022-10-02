@@ -10,10 +10,13 @@ const Mutation = {
         const { db } = ctx;
 
         if(password.length < 8){
-            throw new Error("Password must be 8 characters or longer");
+            return {
+                code: constants.STATUS_CODE_400,
+                sucess: false,
+                message: 'Password must be 8 characters or longer'
+            }
         }
         const hashedPassword = await bcrypt.hash(password, salt);
-
         const id = uuidv4();
         try {
             const foundUser = await db.User.findOne({
