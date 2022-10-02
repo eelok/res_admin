@@ -4,13 +4,14 @@ const constants = require('../constants');
 const bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(10);
 const jwt = require('jsonwebtoken');
+const { GraphQLYogaError } = require('@graphql-yoga/node');
 const secret = 'mySecret'
 const Mutation = {
     async createUser(parent, args, ctx, info) {
         const { firstName, lastName, email, password } = args;
         const { db } = ctx;
 
-        if(password.length < 8){
+        if (password.length < 8) {
             throw new Error('Password must be 8 characters or longer');
             // return {
             //     code: constants.STATUS_CODE_400,
@@ -26,15 +27,15 @@ const Mutation = {
             });
             if (!foundUser) {
                 const newUser = await db.User.create({
-                     id,
-                     firstName,
-                     lastName,
-                     email,
-                     password: hashedPassword
+                    id,
+                    firstName,
+                    lastName,
+                    email,
+                    password: hashedPassword
                 });
                 return {
                     user: newUser,
-                    token: jwt.sign({id: newUser.id}, secret)
+                    token: jwt.sign({ id: newUser.id }, secret)
                     // code: constants.STATUS_CODE_201,
                     // sucess: true,
                     // message: 'User with ${id} was created',
@@ -51,27 +52,27 @@ const Mutation = {
             throw err;
         }
     },
-    async loginUser(parent, args, ctx, info){ 
-        const {email, password} = args;
-        const {db} = ctx;
+    async loginUser(parent, args, ctx, info) {
+        const { email, password } = args;
+        const { db } = ctx;
         const foundUser = await db.User.findOne({
             where: {
                 email
             }
         });
-        if(!foundUser){
-            throw Error(`Unable to login`);
+        if (!foundUser) {
+            throw new GraphQLYogaError(`Unable to login`);
         }
         const isMatch = await bcrypt.compare(password, foundUser.password);
-        if(!isMatch){
-            throw Error('Unable to login');
+        if (!isMatch) {
+            throw new GraphQLYogaError('Unable to login');
         }
         return {
             user: foundUser,
-            token: jwt.sign({id: foundUser.id}, secret)
+            token: jwt.sign({ id: foundUser.id }, secret)
         }
     },
-    async addHardSkillToUser(parent, args, ctx, info){
+    async addHardSkillToUser(parent, args, ctx, info) {
         const { userId, title } = args;
         const { db } = ctx;
         const id = uuidv4();
@@ -86,7 +87,7 @@ const Mutation = {
             }
             const createdHardSkill = await db.Hardskill.create({
                 id,
-                title, 
+                title,
                 userId: foundUser.id
             });
             return {
@@ -94,7 +95,7 @@ const Mutation = {
                 sucess: true,
                 message: `a hard skill wiht id ${createdHardSkill.id} was added to user with id ${foundUser.id}`
             }
-        } catch(err){
+        } catch (err) {
             throw err;
         }
 
@@ -118,23 +119,23 @@ const Mutation = {
                     end,
                     shortName,
                     longName,
-                    division, 
+                    division,
                 }
             });
-            if(!foundEducation){
+            if (!foundEducation) {
                 const education = await db.Education.create({ id, start, end, shortName, longName, division, description });
-                if(!education){
+                if (!education) {
                     return {
                         code: constants.STATUS_CODE_404,
                         sucess: false,
-                        message: `education with id ${education.id} was not created`  
+                        message: `education with id ${education.id} was not created`
                     }
                 }
                 const res = await foundUser.addEducation(education, { through: db.User_Education });
                 return {
                     code: constants.STATUS_CODE_201,
                     sucess: true,
-                    message: `education wiht id ${education.id} was added to ${foundUser.id}` 
+                    message: `education wiht id ${education.id} was added to ${foundUser.id}`
                 };
             }
             const recordUserEducation = await db.User_Education.findOne({
@@ -144,7 +145,7 @@ const Mutation = {
                 }
             });
             console.log(recordUserEducation);
-            if(recordUserEducation){
+            if (recordUserEducation) {
                 return {
                     code: constants.STATUS_CODE_404,
                     sucess: false,
@@ -156,7 +157,7 @@ const Mutation = {
             return {
                 code: constants.STATUS_CODE_201,
                 sucess: true,
-                message: `education wiht id ${education.id} was added to ${foundUser.id}` 
+                message: `education wiht id ${education.id} was added to ${foundUser.id}`
             };
         } catch (err) {
             console.log(err);
