@@ -51,6 +51,25 @@ const Mutation = {
             throw err;
         }
     },
+    async loginUser(parent, args, ctx, info){ 
+        const {email, password} = args;
+        const {db} = ctx;
+        const foundUser = await db.User.findOne({
+            where: {
+                email
+            }
+        });
+        if(!foundUser){
+            throw Error(`user with emiil: ${email} does not exists`);
+        }
+        const isMatch = await bcrypt.compare(password, foundUser.password);
+        if(!isMatch){
+            throw Error('wrong password');
+        }
+        return {
+            user: foundUser
+        }
+    },
     async addHardSkillToUser(parent, args, ctx, info){
         const { userId, title } = args;
         const { db } = ctx;
