@@ -60,14 +60,15 @@ const Mutation = {
             }
         });
         if(!foundUser){
-            throw Error(`user with emiil: ${email} does not exists`);
+            throw Error(`Unable to login`);
         }
         const isMatch = await bcrypt.compare(password, foundUser.password);
         if(!isMatch){
-            throw Error('wrong password');
+            throw Error('Unable to login');
         }
         return {
-            user: foundUser
+            user: foundUser,
+            token: jwt.sign({id: foundUser.id}, secret)
         }
     },
     async addHardSkillToUser(parent, args, ctx, info){
