@@ -15,8 +15,11 @@ const server =
                 Mutation
             }
         },
-        context: {
-            db
+        context(request) {
+            return {
+                db,
+                request
+            }
         }
     })
 

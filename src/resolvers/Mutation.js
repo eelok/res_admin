@@ -100,9 +100,21 @@ const Mutation = {
         }
 
     },
+
+    //todo rename addMyEducation
     async addEducationToUser(parent, args, ctx, info) {
         const { userID, start, end, shortName, longName, division, description } = args
-        const { db } = ctx;
+        const { db, request } = ctx;
+        const header = request.req.headers.authorization;
+        if(!header){
+            throw new GraphQLYogaError("Authenticaton required");
+        }
+        const token = header.split(" ")[1];
+        const decoded = jwt.verify(token, secret);
+        console.log(decoded.id);
+        /// дальше id из токена?
+
+
         const id = uuidv4();
         const foundUser = await db.User.findByPk(userID);
         if (!foundUser) {
