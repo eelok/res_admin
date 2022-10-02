@@ -1,17 +1,32 @@
 const { where } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
 const constants = require('../constants');
+const bcrypt = require('bcryptjs');
+const salt = bcrypt.genSaltSync(10);
+
 const Mutation = {
     async createUser(parent, args, ctx, info) {
-        const { firstName, lastName, email } = args;
+        const { firstName, lastName, email, password } = args;
         const { db } = ctx;
+
+        if(password.length < 8){
+            throw new Error("Password must be 8 characters or longer");
+        }
+        const hashedPassword = await bcrypt.hash(password, salt);
+
         const id = uuidv4();
         try {
             const foundUser = await db.User.findOne({
                 where: { email }
             });
             if (!foundUser) {
-                const newUser = await db.User.create({ id: id, firstName: firstName, lastName: lastName, email });
+                const newUser = await db.User.create({
+                     id,
+                     firstName,
+                     lastName,
+                     email,
+                     password: hashedPassword
+                });
                 return {
                     code: constants.STATUS_CODE_201,
                     sucess: true,
