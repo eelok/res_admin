@@ -7,9 +7,11 @@ const jwt = require('jsonwebtoken');
 const { GraphQLYogaError } = require('@graphql-yoga/node');
 const { getUserID } = require('../util/getUserID');
 const {createUser} = require('../resolvers/user/createUser');
+const {loginUser} = require('../resolvers/user/loginUser');
 const secret = 'mySecret'
 const Mutation = {
     createUser,
+    loginUser,
     // async createUser(parent, args, ctx, info) {
     //     const { firstName, lastName, email, password } = args;
     //     const { db } = ctx;
@@ -42,26 +44,27 @@ const Mutation = {
     //         throw err;
     //     }
     // },
-    async loginUser(parent, args, ctx, info) {
-        const { email, password } = args;
-        const { db } = ctx;
-        const foundUser = await db.User.findOne({
-            where: {
-                email
-            }
-        });
-        if (!foundUser) {
-            throw new GraphQLYogaError(`Unable to login`);
-        }
-        const isMatch = await bcrypt.compare(password, foundUser.password);
-        if (!isMatch) {
-            throw new GraphQLYogaError('Unable to login');
-        }
-        return {
-            user: foundUser,
-            token: jwt.sign({ id: foundUser.id }, secret)
-        }
-    },
+
+    // async loginUser(parent, args, ctx, info) {
+    //     const { email, password } = args;
+    //     const { db } = ctx;
+    //     const foundUser = await db.User.findOne({
+    //         where: {
+    //             email
+    //         }
+    //     });
+    //     if (!foundUser) {
+    //         throw new GraphQLYogaError(`Unable to login`);
+    //     }
+    //     const isMatch = await bcrypt.compare(password, foundUser.password);
+    //     if (!isMatch) {
+    //         throw new GraphQLYogaError('Unable to login');
+    //     }
+    //     return {
+    //         user: foundUser,
+    //         token: jwt.sign({ id: foundUser.id }, secret)
+    //     }
+    // },
     async addHardSkillToUser(parent, args, ctx, info) {
         const { userId, title } = args;
         const { db } = ctx;
