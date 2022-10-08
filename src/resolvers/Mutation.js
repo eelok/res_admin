@@ -6,40 +6,42 @@ const salt = bcrypt.genSaltSync(10);
 const jwt = require('jsonwebtoken');
 const { GraphQLYogaError } = require('@graphql-yoga/node');
 const { getUserID } = require('../util/getUserID');
+const {createUser} = require('../resolvers/user/createUser');
 const secret = 'mySecret'
 const Mutation = {
-    async createUser(parent, args, ctx, info) {
-        const { firstName, lastName, email, password } = args;
-        const { db } = ctx;
+    createUser,
+    // async createUser(parent, args, ctx, info) {
+    //     const { firstName, lastName, email, password } = args;
+    //     const { db } = ctx;
 
-        if (password.length < 8) {
-            throw new GraphQLYogaError('Password must be 8 characters or longer');
-        }
-        const hashedPassword = await bcrypt.hash(password, salt);
-        const id = uuidv4();
-        try {
-            const foundUser = await db.User.findOne({
-                where: { email }
-            });
-            if (foundUser) {
-                throw new GraphQLYogaError('User with the such email is already exists');
-            }
-            const newUser = await db.User.create({
-                id,
-                firstName,
-                lastName,
-                email,
-                password: hashedPassword
-            });
-            return {
-                user: newUser,
-                token: jwt.sign({ id: newUser.id }, secret)
-            }
-        } catch (err) {
-            console.log(err);
-            throw err;
-        }
-    },
+    //     if (password.length < 8) {
+    //         throw new GraphQLYogaError('Password must be 8 characters or longer');
+    //     }
+    //     const hashedPassword = await bcrypt.hash(password, salt);
+    //     const id = uuidv4();
+    //     try {
+    //         const foundUser = await db.User.findOne({
+    //             where: { email }
+    //         });
+    //         if (foundUser) {
+    //             throw new GraphQLYogaError('User with the such email is already exists');
+    //         }
+    //         const newUser = await db.User.create({
+    //             id,
+    //             firstName,
+    //             lastName,
+    //             email,
+    //             password: hashedPassword
+    //         });
+    //         return {
+    //             user: newUser,
+    //             token: jwt.sign({ id: newUser.id }, secret)
+    //         }
+    //     } catch (err) {
+    //         console.log(err);
+    //         throw err;
+    //     }
+    // },
     async loginUser(parent, args, ctx, info) {
         const { email, password } = args;
         const { db } = ctx;
