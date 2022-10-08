@@ -6,8 +6,7 @@ type Mutation {
     createUser(firstName: String!, lastName: String!, email: String!, password: String!): AuthPayload!
     loginUser(email: String!, password: String): AuthPayload!   
     addEducationToUser
-    (userID: String!,
-        start: String!, end: String!,
+    (start: String!, end: String!,
         shortName: String, longName: String,
         division: String, description: String
     ): AddEducatonToUserResponse!

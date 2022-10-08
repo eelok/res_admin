@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(10);
 const jwt = require('jsonwebtoken');
 const { GraphQLYogaError } = require('@graphql-yoga/node');
+const { getUserID } = require('../util/getUserID');
 const secret = 'mySecret'
 const Mutation = {
     async createUser(parent, args, ctx, info) {
@@ -12,12 +13,7 @@ const Mutation = {
         const { db } = ctx;
 
         if (password.length < 8) {
-            throw new Error('Password must be 8 characters or longer');
-            // return {
-            //     code: constants.STATUS_CODE_400,
-            //     sucess: false,
-            //     message: 'Password must be 8 characters or longer'
-            // }
+            throw new GraphQLYogaError('Password must be 8 characters or longer');
         }
         const hashedPassword = await bcrypt.hash(password, salt);
         const id = uuidv4();
@@ -25,28 +21,20 @@ const Mutation = {
             const foundUser = await db.User.findOne({
                 where: { email }
             });
-            if (!foundUser) {
-                const newUser = await db.User.create({
-                    id,
-                    firstName,
-                    lastName,
-                    email,
-                    password: hashedPassword
-                });
-                return {
-                    user: newUser,
-                    token: jwt.sign({ id: newUser.id }, secret)
-                    // code: constants.STATUS_CODE_201,
-                    // sucess: true,
-                    // message: 'User with ${id} was created',
-                };
+            if (foundUser) {
+                throw new GraphQLYogaError('User with the such email is already exists');
             }
+            const newUser = await db.User.create({
+                id,
+                firstName,
+                lastName,
+                email,
+                password: hashedPassword
+            });
             return {
-                // code: constants.STATUS_CODE_400,
-                // sucess: false,
-                // message: 'User with ${id} is already exists',
+                user: newUser,
+                token: jwt.sign({ id: newUser.id }, secret)
             }
-
         } catch (err) {
             console.log(err);
             throw err;
@@ -96,84 +84,37 @@ const Mutation = {
                 message: `a hard skill wiht id ${createdHardSkill.id} was added to user with id ${foundUser.id}`
             }
         } catch (err) {
-            throw err;
+            throw GraphQLYogaError(err);
         }
-
     },
 
     //todo rename addMyEducation
     async addEducationToUser(parent, args, ctx, info) {
-        const { userID, start, end, shortName, longName, division, description } = args
+        const { start, end, shortName, longName, division, description } = args
         const { db, request } = ctx;
-        const header = request.req.headers.authorization;
-        if(!header){
-            throw new GraphQLYogaError("Authenticaton required");
-        }
-        const token = header.split(" ")[1];
-        const decoded = jwt.verify(token, secret);
-        console.log(decoded.id);
-        /// дальше id из токена?
 
-
-        const id = uuidv4();
-        const foundUser = await db.User.findByPk(userID);
-        if (!foundUser) {
-            return {
-                code: constants.STATUS_CODE_404,
-                sucess: false,
-                message: `user with id: ${userID} does not exist`
-            };
-        }
         try {
-            const foundEducation = await db.Education.findOne({
-                where: {
-                    start,
-                    end,
-                    shortName,
-                    longName,
-                    division,
-                }
-            });
-            if (!foundEducation) {
-                const education = await db.Education.create({ id, start, end, shortName, longName, division, description });
-                if (!education) {
-                    return {
-                        code: constants.STATUS_CODE_404,
-                        sucess: false,
-                        message: `education with id ${education.id} was not created`
-                    }
-                }
-                const res = await foundUser.addEducation(education, { through: db.User_Education });
-                return {
-                    code: constants.STATUS_CODE_201,
-                    sucess: true,
-                    message: `education wiht id ${education.id} was added to ${foundUser.id}`
-                };
-            }
-            const recordUserEducation = await db.User_Education.findOne({
-                where: {
-                    userId: foundUser.id,
-                    educationId: foundEducation.id
-                }
-            });
-            console.log(recordUserEducation);
-            if (recordUserEducation) {
+            const userID = getUserID(request);
+            const foundUser = await db.User.findByPk(userID);
+            
+            if (!foundUser) {
                 return {
                     code: constants.STATUS_CODE_404,
                     sucess: false,
-                    message: `${foundUser.id} alrady has the edcucaton ${foundEducation.id}`
+                    message: `user with id: ${decoded.id} does not exist`
                 };
             }
-            const res = await foundUser.addEducation(education, { through: db.User_Education });
-            console.log(res);
+            const id = uuidv4();
+            const education = await db.Education.create({ id, start, end, shortName, longName, division, description });
+            const newUserEducation = await foundUser.addEducation(education, { through: db.User_Education });
             return {
-                code: constants.STATUS_CODE_201,
-                sucess: true,
-                message: `education wiht id ${education.id} was added to ${foundUser.id}`
+                    code: constants.STATUS_CODE_201,
+                    sucess: true,
+                    message: `education wiht id ${education.id} was added to ${foundUser.id}`
             };
         } catch (err) {
             console.log(err);
-            throw err;
+            throw new GraphQLYogaError(err);
         }
     }
 }
