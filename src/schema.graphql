@@ -3,10 +3,10 @@ type Query {
 }
 
 type Mutation {
-    createUser(firstName: String!, lastName: String!, email: String!): UserMutationSersponse!
+    createUser(firstName: String!, lastName: String!, email: String!, password: String!): AuthPayload!
+    loginUser(email: String!, password: String): AuthPayload!   
     addEducationToUser
-    (userID: String!,
-        start: String!, end: String!,
+    (start: String!, end: String!,
         shortName: String, longName: String,
         division: String, description: String
     ): AddEducatonToUserResponse!
@@ -29,6 +29,7 @@ type User {
     firstName: String!
     lastName: String!
     email: String!
+    password: String!
 }
 
 type UserMutationSersponse {
@@ -54,3 +55,8 @@ type HardSkill {
     title: String
 }
 
+
+type AuthPayload {
+    token: String!
+    user: User!
+}
