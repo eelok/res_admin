@@ -1,5 +1,6 @@
 type Query {
     getUserByID(id: ID!): User
+    getAllEducationByUserID: [Education]
 }
 
 type Mutation {
@@ -30,7 +31,7 @@ type User {
     id: ID!
     firstName: String!
     lastName: String!
-    email: String!
+    email: String
     password: String!
 }
 
