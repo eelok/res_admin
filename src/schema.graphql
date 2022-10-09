@@ -10,7 +10,9 @@ type Mutation {
         shortName: String, longName: String,
         division: String, description: String
     ): AddEducatonToUserResponse!
+    deleteEducation(id: String!): Boolean
     addHardSkillToUser(title: String!): AddHardSkillResponse!
+    deleteHardSkill(id: String): Boolean
 }
 
 type Education {
