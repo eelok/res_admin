@@ -1,5 +1,5 @@
 type Query {
-    getUserByID(id: ID!): User
+    getUserByID(id: String!): User
     getAllEducation: [Education]
     getAllHardSkill: [HardSkill]
 }
