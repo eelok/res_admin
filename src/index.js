@@ -2,8 +2,8 @@ const { createServer } = require('@graphql-yoga/node');
 const fs = require('fs');
 const db = require('../models');
 
-const { Query } = require('./resolvers/resolver');
-const { Mutation } = require('./resolvers/resolver');
+const { Query, Mutation, User } = require('./resolvers/resolver');
+
 
 
 const server =
@@ -12,7 +12,8 @@ const server =
             typeDefs: fs.readFileSync('./src/schema.graphql', { encoding: "utf8" }),
             resolvers: {
                 Query,
-                Mutation
+                Mutation,
+                User
             }
         },
         context(request) {

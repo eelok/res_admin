@@ -6,6 +6,8 @@ const {deleteEducation} = require('./education/deleteEducation');
 const {deleteHardSkill} = require('./hardSkill/deleteHardSkill');
 const {getAllEducationByUserID} = require('./education/getAllEducationByUserID');
 const {getAllHardSkill} = require('../resolvers/hardSkill/getAllHardSkill');
+const {getUserByID} = require('./user/getUserByID');
+const {hardSkills} = require('./hardSkill/hardSkills');
 
 const Mutation = {
     createUser,
@@ -17,21 +19,16 @@ const Mutation = {
 }
 
 const Query = {
-    // async getUserByID(parent, args, ctx, info){
-    //     const {id} = args;
-    //     const {db} = ctx
-    //     try{
-    //         const foundUser = await db.User.findByPk(id);
-    //         return foundUser;
-    //     } catch(err){
-    //         throw err
-    //     }
-    // },
+    getUserByID,
     getAllEducationByUserID,
-    getAllHardSkill
+    getAllHardSkill,
 }
 
+const User = {
+    hardSkills
+}
 module.exports = {
     Mutation,
-    Query
+    Query,
+    User
 }
