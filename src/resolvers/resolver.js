@@ -4,10 +4,9 @@ const {addEducationToUser} = require('./education/addEducationToUser');
 const {addHardSkillToUser} = require('./hardSkill/addHardSkillToUser');
 const {deleteEducation} = require('./education/deleteEducation');
 const {deleteHardSkill} = require('./hardSkill/deleteHardSkill');
-const {getAllEducationByUserID} = require('./education/getAllEducationByUserID');
+const {getAllEducation} = require('./education/getAllEducation');
 const {getAllHardSkill} = require('../resolvers/hardSkill/getAllHardSkill');
 const {getUserByID} = require('./user/getUserByID');
-const {hardSkills} = require('./hardSkill/hardSkills');
 
 const Mutation = {
     createUser,
@@ -20,12 +19,13 @@ const Mutation = {
 
 const Query = {
     getUserByID,
-    getAllEducationByUserID,
+    getAllEducation,
     getAllHardSkill,
 }
 
 const User = {
-    hardSkills
+    getAllHardSkill,
+    getAllEducation
 }
 module.exports = {
     Mutation,

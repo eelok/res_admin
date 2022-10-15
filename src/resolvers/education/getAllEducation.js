@@ -1,8 +1,9 @@
 const {getUserID} = require('../../util/getUserID');
 
-const getAllEducationByUserID = async (parent, args, ctx, info) => {
+const getAllEducation = async (parent, args, ctx, info) => {
+    const {id: userId} = parent;
     const {db, request} = ctx;
-    const userId = getUserID(request);
+    // const userId = getUserID(request);
     try{
         const foundUser = await db.User.findByPk(userId);
         const allEducations = await foundUser.getEducation();
@@ -15,5 +16,5 @@ const getAllEducationByUserID = async (parent, args, ctx, info) => {
 }
 
 module.exports = {
-    getAllEducationByUserID
+    getAllEducation
 }
