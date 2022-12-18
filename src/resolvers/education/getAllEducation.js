@@ -11,8 +11,6 @@ const getAllEducation = async (parent, args, ctx, info) => {
     } catch(err){
         throw new GraphQLYogaError(err);
     }
-
-
 }
 
 module.exports = {
